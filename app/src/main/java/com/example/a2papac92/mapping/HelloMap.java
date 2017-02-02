@@ -43,7 +43,3 @@ public class HelloMap extends Activity implements View.OnClickListener
         mv.getController().setCenter(new GeoPoint(latitude,longitude));
     }
 }
-
-
-// xylophagou latitude 34.975
-//            longitude 33.8517
