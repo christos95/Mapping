@@ -19,75 +19,72 @@ import android.content.Intent;
 
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 
-public class HelloMap extends Activity implements View.OnClickListener
-{
+public class HelloMap extends Activity {
     MapView mv;
 
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button submitButton = (Button) findViewById(R.id.submitButton);
-        submitButton.setOnClickListener(this);
 
         Configuration.getInstance().load
                 (this, PreferenceManager.getDefaultSharedPreferences(this));
 
-        mv = (MapView)findViewById(R.id.map1);
+        mv = (MapView) findViewById(R.id.map1);
         mv.setBuiltInZoomControls(true);
         mv.getController().setZoom(14);
-        mv.getController().setCenter(new GeoPoint(40.1,22.5));
+        mv.getController().setCenter(new GeoPoint(40.1, 22.5));
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater=getMenuInflater();
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_hello_map, menu);
         return true;
     }
 
-    @Override
-    public void onClick(View view) {
-        EditText latitudeEditText = (EditText) findViewById(R.id.latitudeEditText);
-        double latitude = Double.parseDouble(latitudeEditText.getText().toString());
 
-        EditText longitudeEditText = (EditText) findViewById(R.id.longitudeEditText);
-        double longitude = Double.parseDouble(longitudeEditText.getText().toString());
 
-        mv.getController().setCenter(new GeoPoint(latitude,longitude));
-    }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.choosemap)
-        {
-            Intent intent = new Intent(this,MapChooseActivity.class);
-            startActivityForResult(intent,0);
+        if (item.getItemId() == R.id.choosemap) {
+            Intent intent = new Intent(this, MapChooseActivity.class);
+            startActivityForResult(intent, 0);
+
+            return true;
+        } else if (item.getItemId() == R.id.setlocation) {
+            Intent intent = new Intent(this, SetLocationActivity.class);
+            startActivityForResult(intent,1 );
 
             return true;
         }
         return false;
     }
 
-    protected void onActivityResult(int requestCode,int resultCode,Intent intent)
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 
-        if(requestCode==0)
-        {
+        if (requestCode == 0) {
 
-            if (resultCode==RESULT_OK)
-            {
-                Bundle extras=intent.getExtras();
+            if (resultCode == RESULT_OK) {
+                Bundle extras = intent.getExtras();
                 boolean cyclemap = extras.getBoolean("com.example.cyclemap");
-                if(cyclemap==true)
-                {
+                if (cyclemap == true) {
                     mv.setTileSource(TileSourceFactory.CYCLEMAP);
-                }
-                else
-                {
+                } else {
                     mv.getTileProvider().setTileSource(TileSourceFactory.MAPNIK);
                 }
             }
         }
-    }
+        if (requestCode == 1) {
 
+            if (resultCode == RESULT_OK) {
+                Bundle extras = intent.getExtras();
+                double latitude = extras.getDouble("com.example.latitude");
+                double longitude = extras.getDouble("com.example.longitude");
+
+                mv.getController().setCenter(new GeoPoint(latitude, longitude));
+
+            }
+        }
+
+    }
 }
